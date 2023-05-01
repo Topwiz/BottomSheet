@@ -2,6 +2,7 @@ Pod::Spec.new do |spec|
   spec.name                   = 'BottomSheetSwiftUI'
   spec.version                = '3.1.0'
   spec.swift_version          = '5.5'
+  spec.platform               = :ios, '14.0'
   spec.authors                = { 'Lucas Zischka' => 'lucas_zischka@outlook.com' }
   spec.license                = { :type => 'MIT', :file => 'LICENSE.txt' }
   spec.homepage               = 'https://github.com/lucaszischka/BottomSheet'
@@ -14,7 +15,7 @@ Pod::Spec.new do |spec|
                                   'https://user-images.githubusercontent.com/63545066/132514347-57c5397b-ec03-4716-8e01-4e693082e844.gif',
                                   'https://user-images.githubusercontent.com/63545066/132514283-b14b2977-c5d1-4b49-96b1-19995cd5a41f.gif' ]
   
-  spec.ios.deployment_target  = '13.0'
+  spec.ios.deployment_target  = '14.0'
   spec.osx.deployment_target  = '10.15'
   
   spec.source_files           = 'Sources/BottomSheet/**/*.swift'
