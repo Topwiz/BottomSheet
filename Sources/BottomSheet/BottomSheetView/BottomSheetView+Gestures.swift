@@ -25,6 +25,7 @@ internal extension BottomSheetView {
                 self.endEditing()
             }
             .onEnded { value in
+                self.lastDragValue = nil
                 self.onEnded(with: geometry, value: value)
             }
     }
@@ -76,6 +77,7 @@ internal extension BottomSheetView {
                 self.endEditing()
             }
             .onEnded { value in
+                self.lastAppleScrollDragValue = nil
                 self.appleScrollViewOnEnded(with: geometry, value: value)
             }
     }
