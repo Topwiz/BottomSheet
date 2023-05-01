@@ -108,5 +108,8 @@ internal struct BottomSheetView<HContent: View, MContent: View>: View {
         .edgesIgnoringSafeArea(
             self.isIPadFloatingOrMac ? .top : .bottom
         )
+        .onRotate {
+            self.orientation = $0
+        }
     }
 }

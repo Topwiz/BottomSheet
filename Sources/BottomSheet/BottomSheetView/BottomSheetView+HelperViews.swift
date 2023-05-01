@@ -78,6 +78,10 @@ internal extension BottomSheetView {
         .transition(.move(
             edge: self.isIPadFloatingOrMac ? .top : .bottom
         ))
+        .animation(
+            nil,
+            value: self.orientation
+        )
     }
     
     func dragIndicator(with geometry: GeometryProxy) -> some View {
