@@ -10,8 +10,13 @@ import SwiftUI
 internal extension BottomSheetView {
     func dragGesture(with geometry: GeometryProxy) -> some Gesture {
         DragGesture()
+            .updating(self.$isDragging, body: { value, state, transaction in
+                state = true
+            })
             .onChanged { value in
+                guard self.draggingIsEnabled else { return }
                 // Perform custom onChanged action
+                self.lastDragValue = value
                 self.configuration.onDragChanged(value)
                 
                 // Update translation; on iPad floating and Mac the drag direction is reversed
@@ -20,26 +25,38 @@ internal extension BottomSheetView {
                 self.endEditing()
             }
             .onEnded { value in
-                // Perform custom onEnded action
-                self.configuration.onDragEnded(value)
-                
-                // Switch the position based on the translation and screen height
-                self.dragPositionSwitch(
-                    with: geometry,
-                    value: value
-                )
-                
-                // Reset translation, because the dragging ended
-                self.translation = 0
-                // Dismiss the keyboard after drag
-                self.endEditing()
+                self.onEnded(with: geometry, value: value)
             }
+    }
+
+    func onEnded(with geometry: GeometryProxy, value: DragGesture.Value?) {
+        guard let value else { return }
+
+        // Perform custom onEnded action
+        self.configuration.onDragEnded(value)
+                
+        // Switch the position based on the translation and screen height
+        self.dragPositionSwitch(
+            with: geometry,
+            value: value
+        )
+                
+        // Reset translation, because the dragging ended
+        self.translation = 0
+        // Dismiss the keyboard after drag
+        self.endEditing()
     }
     
 #if !os(macOS)
     func appleScrollViewDragGesture(with geometry: GeometryProxy) -> some Gesture {
         DragGesture()
+            .updating(self.$isDragging, body: { value, state, transaction in
+                state = true
+            })
             .onChanged { value in
+                guard self.draggingIsEnabled else { return }
+                
+                self.lastAppleScrollDragValue = value
                 if self.bottomSheetPosition.isTop && value.translation.height < 0 {
                     // Notify the ScrollView that the user is scrolling
                     self.dragState = .changed(value: value)
@@ -59,33 +76,41 @@ internal extension BottomSheetView {
                 self.endEditing()
             }
             .onEnded { value in
-                if value.translation.height < 0 && self.bottomSheetPosition.isTop {
-                    // Notify the ScrollView that the user ended scrolling via dragging
-                    self.dragState = .ended(value: value)
-                    
-                    // Reset translation, because the user ended scrolling via dragging
-                    self.translation = 0
-                    // Enable further interaction via the ScrollView directly
-                    self.isScrollEnabled = true
-                } else {
-                    // Perform custom action from the user
-                    self.configuration.onDragEnded(value)
-                    
-                    // Notify the ScrollView that the user is dragging
-                    self.dragState = .none
-                    // Switch the position based on the translation and screen height
-                    self.dragPositionSwitch(
-                        with: geometry,
-                        value: value
-                    )
-                    
-                    // Reset translation, because the dragging ended
-                    self.translation = 0
-                }
-                
-                // Dismiss the keyboard after dragging/scrolling
-                self.endEditing()
+                self.appleScrollViewOnEnded(with: geometry, value: value)
             }
     }
+
+
+    func appleScrollViewOnEnded(with geometry: GeometryProxy, value: DragGesture.Value?) {
+        guard let value else { return }
+
+        if value.translation.height < 0 && self.bottomSheetPosition.isTop {
+            // Notify the ScrollView that the user ended scrolling via dragging
+            self.dragState = .ended(value: value)
+                    
+             // Reset translation, because the user ended scrolling via dragging
+            self.translation = 0
+            // Enable further interaction via the ScrollView directly
+            self.isScrollEnabled = true
+        } else {
+            // Perform custom action from the user
+            self.configuration.onDragEnded(value)
+                    
+            // Notify the ScrollView that the user is dragging
+            self.dragState = .none
+            // Switch the position based on the translation and screen height
+            self.dragPositionSwitch(
+                with: geometry,
+                value: value
+            )
+                    
+            // Reset translation, because the dragging ended
+            self.translation = 0
+        }
+                
+        // Dismiss the keyboard after dragging/scrolling
+        self.endEditing()
+    }
+
 #endif
 }

@@ -32,6 +32,12 @@ internal struct BottomSheetView<HContent: View, MContent: View>: View {
     @ObservedObject var keyboardHeight: KeyboardHeight = KeyboardHeight()
 #endif
     
+    @State var orientation = UIDeviceOrientation.unknown
+    @GestureState var isDragging: Bool = false
+    @State var lastDragValue: DragGesture.Value?
+    @State var lastAppleScrollDragValue: DragGesture.Value?
+    @State var draggingIsEnabled: Bool = true
+    
     // Views
     let headerContent: HContent?
     let mainContent: MContent
@@ -58,6 +64,14 @@ internal struct BottomSheetView<HContent: View, MContent: View>: View {
                     
                     // The BottomSheet itself
                     self.bottomSheet(with: geometry)
+                }
+            }
+            .onChange(of: self.isDragging) { newValue in    
+                guard !newValue else { return }
+                if let value = self.lastDragValue {
+                    self.onEnded(with: geometry, value: value)
+                } else if let value = self.lastAppleScrollDragValue {
+                    self.appleScrollViewOnEnded(with: geometry, value: value)
                 }
             }
             // Animate value changes
@@ -109,7 +123,11 @@ internal struct BottomSheetView<HContent: View, MContent: View>: View {
             self.isIPadFloatingOrMac ? .top : .bottom
         )
         .onRotate {
+            self.draggingIsEnabled = false
             self.orientation = $0
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.draggingIsEnabled = true
+            }
         }
     }
 }
