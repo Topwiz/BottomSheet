@@ -74,8 +74,15 @@ internal struct BottomSheetView<HContent: View, MContent: View>: View {
                     self.appleScrollViewOnEnded(with: geometry, value: value)
                 }
             }
-            // Animate value changes
 #if !os(macOS)
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    if let value = self.lastDragValue {
+                        self.onEnded(with: geometry, value: value)
+                    }
+                }
+            }
+            // Animate value changes
             .animation(
                 self.configuration.animation,
                 value: self.horizontalSizeClass
