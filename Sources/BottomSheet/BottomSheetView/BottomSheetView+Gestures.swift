@@ -25,12 +25,12 @@ internal extension BottomSheetView {
                 self.endEditing()
             }
             .onEnded { value in
-                self.lastDragValue = nil
                 self.onEnded(with: geometry, value: value)
             }
     }
 
     func onEnded(with geometry: GeometryProxy, value: DragGesture.Value?) {
+        self.lastDragValue = nil
         guard let value else { return }
 
         // Perform custom onEnded action
