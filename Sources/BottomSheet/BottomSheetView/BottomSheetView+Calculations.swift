@@ -46,7 +46,7 @@ internal extension BottomSheetView {
 #if os(macOS)
             return NSApplication.shared.mainMenu?.menuBarHeight ?? 20
 #else
-            return UIApplication.shared.windows.first?.safeAreaInsets.top ?? 10
+            return self.configuration.safeAreaInsets?.top ?? UIApplication.shared.windows.first?.safeAreaInsets.top ?? 10
 #endif
         } else {
             return 0
@@ -76,7 +76,7 @@ internal extension BottomSheetView {
         if self.bottomSheetPosition == .dynamicBottom && !self.isIPadFloatingOrMac {
 #if !os(macOS)
             // Safe area as height (iPhone)
-            return UIApplication.shared.windows.first?.safeAreaInsets.bottom ?? 20
+            return self.configuration.safeAreaInsets?.bottom ?? UIApplication.shared.windows.first?.safeAreaInsets.bottom ?? 20
 #else
             // Should never be called
             return 0
