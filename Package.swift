@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "BottomSheet",
     platforms: [
-        .iOS(.v13),
+        .iOS(.v14),
         .macCatalyst(.v13),
         .macOS(.v10_15)
     ],
